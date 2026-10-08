@@ -1,0 +1,17 @@
+# Render Blueprint Specification for SensorScope
+# Fullstack single-service deployment
+services:
+  - type: web
+    name: sensorscope
+    runtime: node
+    plan: free
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_URL
+        sync: false
+
