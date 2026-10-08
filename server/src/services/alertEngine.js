@@ -51,6 +51,17 @@ class AlertEngine {
   }
 
   /**
+   * Updates array of rules or specific rule.
+   */
+  updateRules(newRules) {
+    if (Array.isArray(newRules)) {
+      this.rules = newRules;
+      return [...this.rules];
+    }
+    return this.getRules();
+  }
+
+  /**
    * Resets all rules to factory defaults.
    */
   resetRulesToDefault() {
@@ -117,6 +128,7 @@ class AlertEngine {
             threshold: rule.threshold,
             operator: rule.operator,
             severity: rule.severity,
+            status: 'ACTIVE_BREACH',
             message: `Telemetry alert: ${rule.sensor} is ${reading.value} (threshold ${rule.operator} ${rule.threshold})`
           };
 
@@ -163,6 +175,7 @@ class AlertEngine {
   clearIncidents() {
     this.incidents = [];
     this.violationStates.clear();
+    return [];
   }
 }
 

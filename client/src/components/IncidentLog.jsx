@@ -73,7 +73,7 @@ export default function IncidentLog({ incidents = [], onRefresh }) {
           <div className="h-44 flex flex-col items-center justify-center text-center p-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-400/80 mb-2" />
             <p className="text-xs font-mono text-slate-300 font-medium">
-              No active incidents.
+              All systems nominal. No incidents logged.
             </p>
             <p className="text-[11px] font-mono text-slate-500 mt-0.5">
               Robot operating within safe telemetry parameters.

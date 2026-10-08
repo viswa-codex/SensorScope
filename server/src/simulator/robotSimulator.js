@@ -17,9 +17,9 @@ class RobotSimulator {
 
     // Baseline internal state
     this.state = {
-      battery: 95.0,     // % (0 - 100)
-      temperature: 32.5, // °C (20 - 45 normal)
-      distance: 85.0     // cm (10 - 150 normal)
+      battery: 88.0,     // % (0 - 100)
+      temperature: 30.0, // °C (20 - 45 normal)
+      distance: 75.0     // cm (10 - 150 normal)
     };
   }
 
@@ -48,6 +48,13 @@ class RobotSimulator {
   }
 
   /**
+   * Returns current active mode.
+   */
+  getMode() {
+    return this.mode;
+  }
+
+  /**
    * Sets the operational or fault mode.
    * @param {string} mode
    */
@@ -63,7 +70,7 @@ class RobotSimulator {
     // If switching to normal, gently reset critical states toward safe ranges
     if (mode === 'normal') {
       if (this.state.battery < 30) this.state.battery = 88.0;
-      if (this.state.temperature > 40) this.state.temperature = 34.0;
+      if (this.state.temperature > 40) this.state.temperature = 30.0;
       if (this.state.distance < 20) this.state.distance = 75.0;
     }
 
@@ -85,38 +92,38 @@ class RobotSimulator {
     switch (this.mode) {
       case 'battery_drain':
         // Rapid discharge to test < 20 critical threshold
-        this.state.battery = Math.max(0, +(this.state.battery - (Math.random() * 8 + 4)).toFixed(1));
-        this.state.temperature = +(35 + Math.random() * 4).toFixed(1);
+        this.state.battery = Math.max(0, +(this.state.battery - (Math.random() * 5 + 4)).toFixed(1));
+        this.state.temperature = +(34 + Math.random() * 3).toFixed(1);
         this.state.distance = +(50 + Math.random() * 30).toFixed(1);
         break;
 
       case 'overheat':
-        // Overheating simulation pushing > 45°C
+        // Overheating simulation pushing > 45°C up to 55°C+
         this.state.battery = Math.max(1, +(this.state.battery - 0.2).toFixed(1));
         this.state.temperature = Math.min(85, +(this.state.temperature + (Math.random() * 4 + 3)).toFixed(1));
         this.state.distance = +(60 + Math.random() * 20).toFixed(1);
         break;
 
       case 'obstacle':
-        // Proximity sensor alert, < 10 cm critical barrier
+        // Proximity sensor alert, < 10 cm critical barrier (dropping under 8 cm)
         this.state.battery = Math.max(1, +(this.state.battery - 0.1).toFixed(1));
-        this.state.temperature = +(33 + Math.random() * 3).toFixed(1);
-        this.state.distance = +(Math.random() * 6 + 2).toFixed(1); // 2 - 8 cm
+        this.state.temperature = +(32 + Math.random() * 2).toFixed(1);
+        this.state.distance = +(Math.random() * 5 + 2).toFixed(1); // 2 - 7 cm
         break;
 
       case 'normal':
       default:
         // Slow natural battery discharge
         this.state.battery = Math.max(0, +(this.state.battery - 0.05).toFixed(2));
-        if (this.state.battery < 15) this.state.battery = 98.0; // auto recharge in normal loop
+        if (this.state.battery < 15) this.state.battery = 92.0; // auto recharge in normal loop
 
-        // Natural thermal drift (28 - 38°C)
-        const tempDelta = (Math.random() - 0.5) * 1.2;
-        this.state.temperature = +(Math.min(42, Math.max(26, this.state.temperature + tempDelta))).toFixed(1);
+        // Natural thermal drift (25 - 35°C normal operating range)
+        const tempDelta = (Math.random() - 0.5) * 1.0;
+        this.state.temperature = +(Math.min(35, Math.max(25, this.state.temperature + tempDelta))).toFixed(1);
 
-        // Ultrasonic range fluctuation (30 - 120 cm)
-        const distDelta = (Math.random() - 0.5) * 8.0;
-        this.state.distance = +(Math.min(130, Math.max(25, this.state.distance + distDelta))).toFixed(1);
+        // Ultrasonic range fluctuation (40 - 120 cm)
+        const distDelta = (Math.random() - 0.5) * 6.0;
+        this.state.distance = +(Math.min(120, Math.max(40, this.state.distance + distDelta))).toFixed(1);
         break;
     }
 
@@ -170,4 +177,3 @@ class RobotSimulator {
 }
 
 export const robotSimulator = new RobotSimulator();
-

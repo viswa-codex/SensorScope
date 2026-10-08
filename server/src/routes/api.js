@@ -174,10 +174,22 @@ router.get('/incidents', (req, res) => {
 });
 
 /**
- * DELETE /api/incidents
+ * DELETE /api/incidents & POST /api/incidents/clear
  * Clears stored incidents.
  */
 router.delete('/incidents', (req, res) => {
+  try {
+    alertEngine.clearIncidents();
+    res.json({
+      message: 'Incidents cleared successfully',
+      incidents: []
+    });
+  } catch (err) {
+    res.status(500).json({ error: `Failed to clear incidents: ${err.message}` });
+  }
+});
+
+router.post('/incidents/clear', (req, res) => {
   try {
     alertEngine.clearIncidents();
     res.json({

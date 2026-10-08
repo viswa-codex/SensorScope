@@ -60,6 +60,13 @@ class TelemetryStore {
   }
 
   /**
+   * Alias for getLatestReadings
+   */
+  getLatest() {
+    return this.getLatestReadings();
+  }
+
+  /**
    * Returns reading history for a specific sensor, newest first.
    * @param {string} sensor
    * @param {number} limit
@@ -72,6 +79,15 @@ class TelemetryStore {
     const safeLimit = Math.max(1, Math.min(Number(limit) || 50, this.maxSize));
     // Return newest readings first
     return buffer.slice(-safeLimit).reverse();
+  }
+
+  /**
+   * Returns all readings across all sensors sorted by timestamp.
+   * @param {number} limit
+   * @returns {Array}
+   */
+  getAllHistory(limit = 100) {
+    return this.getAllReadings(limit);
   }
 
   /**
