@@ -75,3 +75,4 @@ This reference guide summarizes the core design decisions, data flow models, and
 - Rather than an unbounded growing array, `telemetryStore.js` employs a ring buffer capped at 100 entries per sensor.
 - When the buffer reaches 100 items, `buffer.shift()` removes the oldest entry before appending the newest.
 - This ensures memory consumption remains bounded and predictable, avoiding memory leaks during long-running telemetry monitoring.
+

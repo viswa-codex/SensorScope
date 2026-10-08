@@ -6,7 +6,7 @@ import AlertRulesPanel from './components/AlertRulesPanel';
 import IncidentLog from './components/IncidentLog';
 import SimulatorControls from './components/SimulatorControls';
 import { useTelemetry } from './hooks/useTelemetry';
-import { Zap, AlertCircle, RefreshCw } from 'lucide-react';
+import { Zap, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 
 export default function App() {
   const {
@@ -23,6 +23,20 @@ export default function App() {
   } = useTelemetry(2000);
 
   const [countdown, setCountdown] = useState(5);
+  const [slowColdStart, setSlowColdStart] = useState(false);
+
+  // Detect potential free-tier cold start on initial boot
+  useEffect(() => {
+    let coldStartTimer;
+    if (isLoading) {
+      coldStartTimer = setTimeout(() => {
+        setSlowColdStart(true);
+      }, 3500);
+    } else {
+      setSlowColdStart(false);
+    }
+    return () => clearTimeout(coldStartTimer);
+  }, [isLoading]);
 
   // Auto retry countdown when disconnected
   useEffect(() => {
@@ -61,6 +75,21 @@ export default function App() {
 
       {/* Main Dashboard Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 space-y-6">
+        {/* Cold-start spinner banner for free-tier cloud environments (Render / Railway) */}
+        {isLoading && slowColdStart && (
+          <div className="bg-cyan-950/40 border border-cyan-800/80 rounded-xl p-4 flex items-center justify-between text-cyan-200 font-mono text-xs shadow-lg">
+            <div className="flex items-center space-x-3">
+              <Loader2 className="w-5 h-5 text-cyan-400 animate-spin shrink-0" />
+              <div>
+                <p className="font-semibold text-cyan-100">Telemetry Backend Warming Up...</p>
+                <p className="text-[11px] text-cyan-300/80 mt-0.5">
+                  Free cloud instances (e.g. Render/Railway) may take 20–40 seconds to spin down cold containers. Live link establishing shortly.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Connection Failure Alert Banner with Countdown */}
         {(!isConnected || error) && !isLoading && (
           <div className="bg-rose-950/50 border border-rose-800 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-rose-200 shadow-xl shadow-rose-950/40">
